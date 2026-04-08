@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accès Sécurisé...</title>
+    <style>
+        /* Réinitialisation et style global Matrix */
+        body {
+            background-color: #050505;
+            color: #00ff00; /* Vert hacker */
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Empêche l'écran de scroller quand le bouton bouge */
+            position: relative;
+        }
+
+        /* Style du texte du terminal */
+        #terminal {
+            font-size: 1.5rem;
+            white-space: pre-wrap;
+            text-align: left;
+            text-shadow: 0 0 5px #00ff00;
+            max-width: 90%;
+            line-height: 1.5;
+        }
+
+        /* Curseur clignotant */
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2rem;
+            background-color: #00ff00;
+            animation: blink 1s step-end infinite;
+            vertical-align: bottom;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Style du bouton fuyant */
+        #bouton-piege {
+            position: absolute;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background-color: #ff3333;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            box-shadow: 0 0 15px #ff3333;
+            transition: top 0.2s ease-out, left 0.2s ease-out; /* Mouvement fluide */
+            display: none; /* Caché au début */
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="terminal"><span id="text-output"></span><span class="cursor"></span></div>
+
+    <button id="bouton-piege">Ne surtout pas cliquer !</button>
+
+    <script>
+        // --- 1. L'EFFET DE DÉCRYPTAGE MATRIX ---
+        const outputElement = document.getElementById('text-output');
+        
+        // Le message final à révéler
+        const messageFinal = 
+`> INITIATION DU PROTOCOLE DE SÉCURITÉ...
+> RECHERCHE DE LA CIBLE DANS LA BASE DE DONNÉES...
+> CIBLE IDENTIFIÉE : FABIE
+> DÉCRYPTAGE DU MESSAGE CONFIDENTIEL...
+
+[100%] ACCÈS AUTORISÉ.
+
+Je t'aime Fabie 💖`;
+
+        const caracteresAleatoires = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+        let iterations = 0;
+
+        function decoderTexte() {
+            let affichage = "";
+            let termine = true;
+
+            for (let i = 0; i < messageFinal.length; i++) {
+                // On garde les espaces et les retours à la ligne intacts
+                if (messageFinal[i] === '\n' || messageFinal[i] === ' ') {
+                     affichage += messageFinal[i];
+                     continue;
+                }
+                
+                // Les caractères se figent progressivement, un par un
+                if (iterations > i * 2) {
+                    affichage += messageFinal[i];
+                } else {
+                    // Sinon, on affiche un caractère aléatoire
+                    affichage += caracteresAleatoires[Math.floor(Math.random() * caracteresAleatoires.length)];
+                    termine = false;
+                }
+            }
+
+            outputElement.innerText = affichage;
+
+            if (!termine) {
+                iterations++;
+                setTimeout(decoderTexte, 40); // Vitesse du décryptage (en millisecondes)
+            } else {
+                // Quand le décryptage est fini, on fait apparaître le bouton après 2 secondes
+                setTimeout(afficherBouton, 2000);
+            }
+        }
+
+        // Lancement de l'animation après 1 seconde de délai initial
+        setTimeout(decoderTexte, 1000);
+
+
+        // --- 2. LE BOUTON FUYANT ---
+        const bouton = document.getElementById('bouton-piege');
+
+        function afficherBouton() {
+            bouton.style.display = 'block';
+            // On le place au centre pour commencer
+            bouton.style.top = '75%';
+            bouton.style.left = '50%';
+            bouton.style.transform = 'translate(-50%, -50%)';
+        }
+
+        function fuir() {
+            // On enlève le centrage initial pour que le positionnement absolu fonctionne bien
+            bouton.style.transform = 'none';
+
+            // Calcul de l'espace disponible (taille de l'écran moins taille du bouton)
+            const maxLeft = window.innerWidth - bouton.offsetWidth - 20;
+            const maxTop = window.innerHeight - bouton.offsetHeight - 20;
+
+            // Génération de nouvelles coordonnées aléatoires
+            const randomLeft = Math.floor(Math.random() * maxLeft);
+            const randomTop = Math.floor(Math.random() * maxTop);
+
+            // Application des nouvelles coordonnées
+            bouton.style.left = `${randomLeft}px`;
+            bouton.style.top = `${randomTop}px`;
+        }
+
+        // Le bouton s'enfuit si on le survole avec la souris (ordinateur)
+        bouton.addEventListener('mouseover', fuir);
+        
+        // Et s'enfuit aussi si on essaie de le toucher (téléphone/tablette)
+        bouton.addEventListener('touchstart', function(e) {
+            e.preventDefault(); // Empêche le clic tactile de se valider
+            fuir();
+        });
+    </script>
+</body>
+</html>
